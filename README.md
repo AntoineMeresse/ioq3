@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/mickael9/ioq3/actions/workflows/main.yml/badge.svg)](https://github.com/mickael9/ioq3/actions/workflows/main.yml)
 
-[Download prebuilt binaries for Linux/macOS/Windows](http://builds.iourtm9.tk/builds/)
+[Download prebuilt binaries for Linux/macOS/Windows](https://github.com/mickael9/ioq3/releases)
 
 This project is an initiative to backport the relevant ioUrbanTerror-specific
 features to an up-to-date ioquake3.

@@ -29,7 +29,7 @@ jobs:
       MAKEFLAGS: -j4
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: setup
         if: ${{ runner.os == 'Linux' }}
@@ -53,16 +53,33 @@ jobs:
           done
         env: ${{ matrix.env }}
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.env.OS }}
+          name: build-${{github.run_number}}-${{ matrix.env.OS }}.zip
           path: build/*.zip
+  upload:
+    needs: build
+    if: github.ref == 'refs/heads/urt'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - uses: google-github-actions/upload-cloud-storage@main
-        if: ${{ github.ref == 'refs/heads/urt' }}
-        with:
-          credentials: ${{ secrets.gcp_credentials }}
-          path: build
-          destination: builds.iourtm9.tk/builds/build-${{ github.run_number }}
-          parent: false
-          glob: '*.zip'
+    - uses: rickstaa/action-create-tag@v1
+      with:
+        tag: builds/${{github.run_number}}
+        force_push_tag: true
+
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: build
+
+    - uses: xresloader/upload-to-github-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        file: build/*/*.zip
+        tag_name: builds/${{github.run_number}}
+        overwrite: true
+        draft: false
